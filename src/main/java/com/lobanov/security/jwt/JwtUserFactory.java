@@ -1,8 +1,8 @@
 package com.lobanov.security.jwt;
 
+import com.lobanov.dto.UserDto;
 import com.lobanov.enums.UserStatus;
 import com.lobanov.models.Role;
-import com.lobanov.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -16,7 +16,7 @@ public final class JwtUserFactory {
 
     }
 
-    public static JwtUser create(User user) {
+    public static JwtUser create(UserDto user) {
         return new JwtUser(
                 user.getId(),
                 user.getUsername(),

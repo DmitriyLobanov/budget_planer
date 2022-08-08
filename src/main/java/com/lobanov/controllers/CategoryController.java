@@ -2,8 +2,10 @@ package com.lobanov.controllers;
 
 import com.lobanov.dto.CategoryDto;
 import com.lobanov.dto.ExpenseDto;
+import com.lobanov.dto.UserDto;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.service.CategoryService;
+import com.lobanov.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final UserService userService;
+
 
     @GetMapping("/me")
     public ResponseEntity<List<CategoryDto>> getAllCategoriesByUserId() {
@@ -37,7 +41,7 @@ public class CategoryController {
     public ResponseEntity<ExpenseDto> addExpensesToCategory(@RequestBody ExpenseDto payload) {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("USER ID = {}", user.getId());
-        ExpenseDto expenseDto = categoryService.addExpensesToCategory(user.getId(), payload.getExpenseValue(), payload.getCategoryName());
+        ExpenseDto expenseDto = categoryService.addExpensesToCategory(user.getId(), payload.getExpenseValue(), payload.getCategoryId());
         return ResponseEntity.ok(expenseDto);
     }
 
@@ -50,18 +54,21 @@ public class CategoryController {
 
     @PutMapping("/me/{id}")
     public ResponseEntity<CategoryDto> changeCategoryParameters(@RequestBody CategoryDto payload, @PathVariable Long id) {
-        CategoryDto categoryDto = categoryService.getCategoryById(id);
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CategoryDto categoryDto = categoryService.getCategoryById(id);
         if (categoryDto == null) {
-            categoryDto = payload;
-            categoryDto.setUserId(user.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.addCategory(categoryDto));
+            UserDto userDto = userService.getUserById(user.getId());
+            categoryDto = new CategoryDto(null, 0L, null, payload.getLimit(), payload.getName(), userDto.getId());
+            categoryService.addCategory(categoryDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
         }
-        categoryDto.setLimit(payload.getLimit());
         categoryDto.setName(payload.getName());
-
+        categoryDto.setLimit(payload.getLimit());
         return ResponseEntity.ok(categoryService.updateCategory(categoryDto));
     }
 
+    @DeleteMapping("/me{id}")
+    public void deleteCategoryById(@PathVariable Long id) {
 
+    }
 }

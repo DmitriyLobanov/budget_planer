@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,6 @@ public class CategoryService {
                 .id(category.getId())
                 .limit(category.getLimit())
                 .expensesList(category.getExpensesList())
-                // .remainder(calculateRemainderInCategory(category.getId()))
                 .name(category.getName())
                 .userId(category.getUser().getId())
                 .build();
@@ -53,6 +51,7 @@ public class CategoryService {
     private ExpenseDto mapExpenseToDto(Expense expense) {
         return ExpenseDto
                 .builder()
+                .categoryId(expense.getCategory().getId())
                 .expenseValue(expense.getExpense())
                 .expensesDateTime(expense.getExpensesDateTime())
                 .categoryName(expense.getCategory().getName())
@@ -64,20 +63,21 @@ public class CategoryService {
         return categoryDto.getLimit() - res;
     }
 
-    public CategoryDto addCategory(CategoryDto categoryDto) {
-        User userById = userRepository.getUserById(categoryDto.getUserId()).orElseThrow(() -> new UserNotFoundException("User not found"));
-        Category category = mapDtoToCategory(categoryDto);
+    public CategoryDto addCategory(CategoryDto payload) {
+        User userById = userRepository.getUserById(payload.getUserId()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Category category = mapDtoToCategory(payload);
         category.setUser(userById);
         Category save = categoryRepository.save(category);
         return mapCategoryToDto(save);
     }
 
-    public CategoryDto updateCategory(CategoryDto categoryDto) {
-        List<Expense> expenseList = new ArrayList<>(categoryDto.getExpensesList());
-        categoryDto.getExpensesList().clear();
-        Category category = mapDtoToCategory(categoryDto);
-        category.setExpensesList(expenseList);
+    public CategoryDto updateCategory(CategoryDto payload) {
+        Category category = categoryRepository.findById(payload.getId()).orElseThrow(() -> new CategoryNotFoundException("Not found"));
+        category.setName(payload.getName());
+        category.setLimit(payload.getLimit());
         categoryRepository.save(category);
+        CategoryDto categoryDto = mapCategoryToDto(category);
+        categoryDto.setRemainder(calculateRemainderInCategory(categoryDto));
         return categoryDto;
     }
 
@@ -92,18 +92,15 @@ public class CategoryService {
     }
 
     public List<CategoryDto> getAllCategoriesByUserId(Long id) {
-        //collect.forEach(c -> c.setRemainder(calculateRemainderInCategory(c)));
         return categoryRepository.findAllByUserId(id).stream()
                 .map(this::mapCategoryToDto)
                 .peek(c -> c.setRemainder(calculateRemainderInCategory(c)))
                 .collect(Collectors.toList());
     }
 
-    public ExpenseDto addExpensesToCategory(Long userId, Long expenseValue, String categoryName) {
-        User user = userRepository.getUserById(userId).orElseThrow(() -> new UserNotFoundException("Cannot find user"));
-        Category category = categoryRepository.findCategoryByNameAndUser(categoryName, user).orElseThrow(() -> new CategoryNotFoundException("Cannot find category"));
+    public ExpenseDto addExpensesToCategory(Long userId, Long expenseValue, Long id) {
+        Category category = categoryRepository.findById(id).orElse(null);
         Expense expense = new Expense(null, new Date(), expenseValue, category);
-        //expensesRepository.save(expense);
         return mapExpenseToDto(expensesRepository.save(expense));
     }
 }

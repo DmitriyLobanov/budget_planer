@@ -1,11 +1,14 @@
 package com.lobanov.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lobanov.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -53,5 +56,6 @@ public class User {
     private List<Role> roles;
 
     @OneToMany(mappedBy = "user")
-    private Set<Category> categories;
+    @JsonManagedReference
+    private List<Category> categories;
 }

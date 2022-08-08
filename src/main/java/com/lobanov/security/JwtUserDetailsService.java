@@ -1,5 +1,6 @@
 package com.lobanov.security;
 
+import com.lobanov.dto.UserDto;
 import com.lobanov.models.User;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.security.jwt.JwtUserFactory;
@@ -19,8 +20,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     //На основании найденного User генерит jwt юзера, который в свою очередь является impl UserDeatials
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findUserByUsername(username);
-        JwtUser jwtUser = JwtUserFactory.create(user);
-        return jwtUser;
+        UserDto user = userService.findUserByUsername(username);
+        return JwtUserFactory.create(user);
     }
 }

@@ -12,6 +12,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class ExpenseDto {
 
+    private Long categoryId;
+
     private Date expensesDateTime;
 
     private Long expenseValue;
