@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,17 +64,28 @@ public class CategoryService {
         return categoryDto.getLimit() - res;
     }
 
-    //лучше в 2 перем
     public CategoryDto addCategory(CategoryDto categoryDto) {
         User userById = userRepository.getUserById(categoryDto.getUserId()).orElseThrow(() -> new UserNotFoundException("User not found"));
-        Category entity = mapDtoToCategory(categoryDto);
-        entity.setUser(userById);
-        Category save = categoryRepository.save(entity);
+        Category category = mapDtoToCategory(categoryDto);
+        category.setUser(userById);
+        Category save = categoryRepository.save(category);
         return mapCategoryToDto(save);
+    }
+
+    public CategoryDto updateCategory(CategoryDto categoryDto) {
+        List<Expense> expenseList = new ArrayList<>(categoryDto.getExpensesList());
+        categoryDto.getExpensesList().clear();
+        Category category = mapDtoToCategory(categoryDto);
+        category.setExpensesList(expenseList);
+        categoryRepository.save(category);
+        return categoryDto;
     }
 
     public CategoryDto getCategoryById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
+        if (category.isEmpty()) {
+            return null;
+        }
         CategoryDto categoryDto = mapCategoryToDto(category.orElseThrow(() -> new CategoryNotFoundException("Category not found")));
         categoryDto.setRemainder(calculateRemainderInCategory(categoryDto));
         return categoryDto;
