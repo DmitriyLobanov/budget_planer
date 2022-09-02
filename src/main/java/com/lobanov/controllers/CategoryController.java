@@ -2,7 +2,7 @@ package com.lobanov.controllers;
 
 import com.lobanov.dto.CategoryDto;
 import com.lobanov.dto.ExpenseDto;
-import com.lobanov.dto.UserDto;
+import com.lobanov.dto.response.UserDtoResponse;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.service.CategoryService;
 import com.lobanov.service.UserService;
@@ -23,7 +23,6 @@ public class CategoryController {
 
     private final CategoryService categoryService;
     private final UserService userService;
-
 
     @GetMapping("/me")
     public ResponseEntity<List<CategoryDto>> getAllCategoriesByUserId() {
@@ -57,7 +56,7 @@ public class CategoryController {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CategoryDto categoryDto = categoryService.getCategoryById(id);
         if (categoryDto == null) {
-            UserDto userDto = userService.getUserById(user.getId());
+            UserDtoResponse userDto = userService.getUserById(user.getId());
             categoryDto = new CategoryDto(null, 0L, null, payload.getLimit(), payload.getName(), userDto.getId());
             categoryService.addCategory(categoryDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
@@ -67,8 +66,8 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.updateCategory(categoryDto));
     }
 
-    @DeleteMapping("/me{id}")
+    @DeleteMapping("/me/{id}")
     public void deleteCategoryById(@PathVariable Long id) {
-
+        categoryService.deleteCategoryById(id);
     }
 }

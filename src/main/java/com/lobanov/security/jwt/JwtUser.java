@@ -1,5 +1,6 @@
 package com.lobanov.security.jwt;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,11 +13,12 @@ import java.util.List;
 //с этим user-ом работает сам spring security
 @RequiredArgsConstructor
 @Getter
+@Builder
 public class JwtUser implements UserDetails {
 
     private final Long Id;
     private final String username;
-    private final String firsName;
+    private final String firstName;
     private final String secondName;
     private final String email;
     private final String phoneNumber;

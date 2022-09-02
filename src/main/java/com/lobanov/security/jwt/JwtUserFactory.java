@@ -1,7 +1,5 @@
 package com.lobanov.security.jwt;
 
-import com.lobanov.dto.UserDto;
-import com.lobanov.enums.UserStatus;
 import com.lobanov.models.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +14,7 @@ public final class JwtUserFactory {
 
     }
 
-    public static JwtUser create(UserDto user) {
+    public static JwtUser create(JwtUser user) {
         return new JwtUser(
                 user.getId(),
                 user.getUsername(),
@@ -25,8 +23,9 @@ public final class JwtUserFactory {
                 user.getEmail(),
                 user.getPhoneNumber(),
                 user.getPassword(),
-                mapToGrantedAuthorities(new ArrayList<>(user.getRoles())),
-                user.getStatus().equals(UserStatus.ACTIVE)
+                mapToGrantedAuthorities(new ArrayList(user.getAuthorities())),
+               true
+               // user.getStatus().equals(UserStatus.ACTIVE)
         );
     }
     private static List<GrantedAuthority> mapToGrantedAuthorities(List<Role> userRoles) {

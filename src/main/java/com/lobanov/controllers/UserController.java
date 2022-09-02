@@ -1,6 +1,8 @@
 package com.lobanov.controllers;
 
-import com.lobanov.dto.UserDto;
+import com.lobanov.dto.UserInformationDto;
+import com.lobanov.dto.request.UserDtoRequest;
+import com.lobanov.dto.response.UserDtoResponse;
 import com.lobanov.models.User;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.service.UserService;
@@ -21,16 +23,17 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<UserDto> getUserInfo() {
+    public ResponseEntity<UserDtoResponse> getUserInfo() {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       // UserInformationDto userInformationDto  =
         return ResponseEntity.ok(userService.getUserById(user.getId()));
     }
 
     @PutMapping
-    public ResponseEntity<UserDto> changeUserInfo(@RequestBody UserDto payload) {
+    public ResponseEntity<UserDtoResponse> changeUserInfo(@RequestBody UserDtoRequest payload) {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         payload.setId(user.getId());
-        UserDto userDto = userService.updateUser(payload);
+        UserDtoResponse userDto = userService.updateUser(payload);
         return ResponseEntity.ok(userDto);
     }
 

@@ -78,11 +78,12 @@ public class CategoryService {
         categoryRepository.save(category);
         CategoryDto categoryDto = mapCategoryToDto(category);
         categoryDto.setRemainder(calculateRemainderInCategory(categoryDto));
+        categoryDto.setId(category.getId());
         return categoryDto;
     }
 
     public CategoryDto getCategoryById(Long id) {
-        Optional<Category> category = categoryRepository.findById(id);
+        Optional<Category> category = categoryRepository.findCategoryById(id);
         if (category.isEmpty()) {
             return null;
         }
@@ -102,5 +103,9 @@ public class CategoryService {
         Category category = categoryRepository.findById(id).orElse(null);
         Expense expense = new Expense(null, new Date(), expenseValue, category);
         return mapExpenseToDto(expensesRepository.save(expense));
+    }
+
+    public void deleteCategoryById(Long id) {
+        categoryRepository.deleteById(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.lobanov.controllers;
 
-import com.lobanov.dto.UserRegistrationRequest;
+import com.lobanov.dto.request.UserRegistrationRequestDto;
 import com.lobanov.security.AuthenticatedRequestDto;
 import com.lobanov.service.AuthenticationRestService;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +26,13 @@ public class AuthenticationRestController {
 
     private final AuthenticationRestService authenticationRestService;
 
+    //private
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticatedRequestDto request) {
+        log.info("username {}, and password {}",request.getUsername(), request.getPassword());
         String token = authenticationRestService.createToken(request.getUsername(), request.getPassword());
+        log.info("TOKEN IS {}", token);
         if (token == null) {
             return new  ResponseEntity<>("Invalid username or password", HttpStatus.FORBIDDEN);
         }
@@ -47,7 +51,8 @@ public class AuthenticationRestController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody UserRegistrationRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationRestService.createUser(request));
+    public ResponseEntity<?> registration(@RequestBody UserRegistrationRequestDto request) {
+       // authenticationRestService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body( authenticationRestService.createUser(request));
     }
 }
