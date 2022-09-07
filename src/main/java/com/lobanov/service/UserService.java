@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,42 +34,28 @@ public class UserService {
     }
 
     private UserDtoResponse mapUserToUserDto(User user) {
-        return  UserDtoResponse.builder()
+        return UserDtoResponse.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .username(user.getUsername())
                 .secondName(user.getSecondName())
-               // .password(user.getPassword())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                //.status(user.getStatus())
-               // .roles(user.getRoles())
                 .categories(user.getCategories())
                 .build();
-    }
-
-    //private UserInformationDto
-
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
-
-    public List<User> getAllUsers() {
-       return userRepository.findAll();
     }
 
     public UserDtoResponse getUserById(Long id) {
         Optional<User> user = userRepository.getUserById(id);
         if (user.isEmpty()) {
-            return  null;
+            return null;
         }
         return mapUserToUserDto(user.get());
     }
-    public JwtUser findUserByUsername(String username) {
-        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("not found"));
-        return mapUserToJwtUser(user);
-    }
 
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("not found"));
+    }
 
 
     public UserDtoResponse updateUser(UserDtoRequest payload) {

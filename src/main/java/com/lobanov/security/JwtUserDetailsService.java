@@ -1,5 +1,6 @@
 package com.lobanov.security;
 
+import com.lobanov.models.User;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.security.jwt.JwtUserFactory;
 import com.lobanov.service.UserService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+//custom user details
 public class JwtUserDetailsService implements UserDetailsService {
 
     private final UserService userService;
@@ -18,9 +20,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     //На основании найденного User генерит jwt юзера, который в свою очередь является impl UserDeatials
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        JwtUser jwtUser;
-        jwtUser =  userService.findUserByUsername(username);
-        return JwtUserFactory.create(jwtUser);
+        User user = userService.findUserByUsername(username);
+        return JwtUserFactory.create(user);
     }
 }

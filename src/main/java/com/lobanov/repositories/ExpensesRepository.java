@@ -11,5 +11,4 @@ public interface ExpensesRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> getExpensesByCategoryId(Long id);
 
-
 }

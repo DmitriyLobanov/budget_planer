@@ -1,6 +1,7 @@
 package com.lobanov.service;
 
 import com.lobanov.dto.request.UserRegistrationRequestDto;
+import com.lobanov.dto.response.UserRegistrationResponseDto;
 import com.lobanov.enums.RolesEnum;
 import com.lobanov.enums.UserStatus;
 import com.lobanov.exeptions.JwtAuthenticationException;
@@ -29,6 +30,16 @@ public class AuthenticationRestService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+
+    public UserRegistrationResponseDto mapRequestToResponse(UserRegistrationRequestDto requestDto) {
+        return UserRegistrationResponseDto.builder()
+                .username(requestDto.getUsername())
+                .firstName(requestDto.getFirstName())
+                .secondName(requestDto.getSecondName())
+                .email(requestDto.getEmail())
+                .phoneNumber(requestDto.getPhoneNumber())
+                .build();
+    }
 
     public String createToken(String username, String password) {
         Authentication authentication;

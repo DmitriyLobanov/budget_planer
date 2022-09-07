@@ -26,7 +26,6 @@ public class AuthenticationRestController {
 
     private final AuthenticationRestService authenticationRestService;
 
-    //private
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticatedRequestDto request) {
@@ -42,8 +41,6 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(response);
     }
 
-    //Performs a logout by modifying the SecurityContextHolder
-
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler handler = new SecurityContextLogoutHandler();
@@ -52,7 +49,7 @@ public class AuthenticationRestController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody UserRegistrationRequestDto request) {
-       // authenticationRestService.createUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body( authenticationRestService.createUser(request));
+        authenticationRestService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationRestService.mapRequestToResponse(request));
     }
 }
