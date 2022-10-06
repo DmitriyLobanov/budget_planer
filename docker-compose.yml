@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: "postgres-dev-db"
+    environment:
+      POSTGRES_USERNAME: "postgres"
+      POSTGRES_PASSWORD: "LEDsa300"
+      POSTGRES_DB: "dev-db"
+    ports:
+      - "5432:5432"
+    image: postgres:14.5-alpine

@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @Configuration
@@ -23,6 +24,11 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JwtConfigurer jwtConfigurer;
     private final JwtUserDetailsService jwtUserDetailsService;
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
 
     @Override
@@ -35,6 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .antMatchers("/api/auth/login").permitAll()
                 .antMatchers("/api/auth/registration").permitAll()
+                .antMatchers("/api/auth/greeting").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -43,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(jwtUserDetailsService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+        auth.userDetailsService(jwtUserDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Bean

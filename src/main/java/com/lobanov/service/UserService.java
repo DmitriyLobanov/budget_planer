@@ -41,7 +41,7 @@ public class UserService {
                 .secondName(user.getSecondName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .categories(user.getCategories())
+                .categories(user.getCategoriesList())
                 .build();
     }
 

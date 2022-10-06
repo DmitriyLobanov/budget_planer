@@ -15,11 +15,11 @@ public class CategoryDto {
 
     private Long id;
 
-    private Long remainder;
+    private Double remainder;
 
     private List<Expense> expensesList;
 
-    private Long limit;
+    private Double limit;
 
     private String name;
 

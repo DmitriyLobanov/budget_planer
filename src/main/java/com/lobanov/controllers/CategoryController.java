@@ -48,7 +48,8 @@ public class CategoryController {
     public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto payload) {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         payload.setUserId(user.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.addCategory(payload));
+        CategoryDto categoryDto = categoryService.addCategory(payload);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
     }
 
     @PutMapping("/me/{id}")
@@ -57,7 +58,7 @@ public class CategoryController {
         CategoryDto categoryDto = categoryService.getCategoryById(id);
         if (categoryDto == null) {
             UserDtoResponse userDto = userService.getUserById(user.getId());
-            categoryDto = new CategoryDto(null, 0L, null, payload.getLimit(), payload.getName(), userDto.getId());
+            categoryDto = new CategoryDto(null, null, null, payload.getLimit(), payload.getName(), userDto.getId());
             categoryService.addCategory(categoryDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
         }

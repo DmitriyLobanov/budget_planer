@@ -52,14 +52,14 @@ public class CategoryService {
         return ExpenseDto
                 .builder()
                 .categoryId(expense.getCategory().getId())
-                .expenseValue(expense.getExpense())
-                .expensesDateTime(expense.getExpensesDateTime())
+                .expenseValue(expense.getExpenseValue())
+                .expenseTimeStamp(expense.getExpenseTimeStamp())
                 .categoryName(expense.getCategory().getName())
                 .build();
     }
 
-    private Long calculateRemainderInCategory(CategoryDto categoryDto) {
-        Long res = categoryDto.getExpensesList().stream().mapToLong(Expense::getExpense).sum();
+    private Double calculateRemainderInCategory(CategoryDto categoryDto) {
+        Double res = categoryDto.getExpensesList().stream().mapToDouble(Expense::getExpenseValue).sum();
         return categoryDto.getLimit() - res;
     }
 
@@ -68,7 +68,9 @@ public class CategoryService {
         Category category = mapDtoToCategory(payload);
         category.setUser(userById);
         Category save = categoryRepository.save(category);
-        return mapCategoryToDto(save);
+        CategoryDto categoryDto = mapCategoryToDto(save);
+        categoryDto.setRemainder(payload.getRemainder());
+        return categoryDto;
     }
 
     public CategoryDto updateCategory(CategoryDto payload) {
@@ -99,7 +101,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public ExpenseDto addExpensesToCategory(Long userId, Long expenseValue, Long id) {
+    public ExpenseDto addExpensesToCategory(Long userId, Double expenseValue, Long id) {
         Category category = categoryRepository.findById(id).orElse(null);
         Expense expense = new Expense(null, new Date(), expenseValue, category);
         return mapExpenseToDto(expensesRepository.save(expense));
