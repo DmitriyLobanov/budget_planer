@@ -19,20 +19,22 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private Long id;
 
-    @Column(name  = "expenses_limit")
-    private Long limit;
 
-    @Column(name = "name")
+    @Column(name  = "category_limit", columnDefinition = "numeric(12, 2) default 0.0")
+    private Double limit;
+
+    @Column(name = "category_name", nullable = false)
     private String name;
 
-    @Column(name = "expenses")
     @OneToMany(mappedBy = "category")
     @JsonManagedReference
     private List<Expense> expensesList;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 }

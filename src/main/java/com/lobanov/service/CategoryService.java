@@ -12,7 +12,9 @@ import com.lobanov.repositories.ExpensesRepository;
 import com.lobanov.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Date;
 import java.util.List;
@@ -52,14 +54,14 @@ public class CategoryService {
         return ExpenseDto
                 .builder()
                 .categoryId(expense.getCategory().getId())
-                .expenseValue(expense.getExpense())
-                .expensesDateTime(expense.getExpensesDateTime())
+                .expenseValue(expense.getExpenseValue())
+                .expenseTimeStamp(expense.getExpenseTimeStamp())
                 .categoryName(expense.getCategory().getName())
                 .build();
     }
 
-    private Long calculateRemainderInCategory(CategoryDto categoryDto) {
-        Long res = categoryDto.getExpensesList().stream().mapToLong(Expense::getExpense).sum();
+    private Double calculateRemainderInCategory(CategoryDto categoryDto) {
+        Double res = categoryDto.getExpensesList().stream().mapToDouble(Expense::getExpenseValue).sum();
         return categoryDto.getLimit() - res;
     }
 
@@ -68,7 +70,9 @@ public class CategoryService {
         Category category = mapDtoToCategory(payload);
         category.setUser(userById);
         Category save = categoryRepository.save(category);
-        return mapCategoryToDto(save);
+        CategoryDto categoryDto = mapCategoryToDto(save);
+        categoryDto.setRemainder(payload.getRemainder());
+        return categoryDto;
     }
 
     public CategoryDto updateCategory(CategoryDto payload) {
@@ -82,12 +86,13 @@ public class CategoryService {
         return categoryDto;
     }
 
-    public CategoryDto getCategoryById(Long id) {
-        Optional<Category> category = categoryRepository.findCategoryById(id);
-        if (category.isEmpty()) {
-            return null;
+    public CategoryDto getCategoryById(Long categoryId, Long userId) {
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByIdAndUserId(categoryId, userId);
+        if (optionalCategory.isEmpty()) {
+            throw  new CategoryNotFoundException("Category with id " + categoryId + " not found");
         }
-        CategoryDto categoryDto = mapCategoryToDto(category.orElseThrow(() -> new CategoryNotFoundException("Category not found")));
+        Category category = optionalCategory.get();
+        CategoryDto categoryDto = mapCategoryToDto(category);
         categoryDto.setRemainder(calculateRemainderInCategory(categoryDto));
         return categoryDto;
     }
@@ -99,13 +104,20 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public ExpenseDto addExpensesToCategory(Long userId, Long expenseValue, Long id) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        Expense expense = new Expense(null, new Date(), expenseValue, category);
+    public ExpenseDto addExpensesToCategory(Long userId, Double expenseValue, Long categoryId) {
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByIdAndUserId(categoryId, userId);
+        if(optionalCategory.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id = " + categoryId + " not found");
+        }
+        Expense expense = new Expense(null, new Date(), expenseValue, optionalCategory.get());
         return mapExpenseToDto(expensesRepository.save(expense));
     }
 
-    public void deleteCategoryById(Long id) {
-        categoryRepository.deleteById(id);
+    public void deleteCategoryById(Long categoryId, Long userId) {
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByIdAndUserId(categoryId, userId);
+        if(optionalCategory.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id = " + categoryId + " not found");
+        }
+        categoryRepository.deleteById(categoryId);
     }
 }

@@ -41,7 +41,7 @@ public class UserService {
                 .secondName(user.getSecondName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .categories(user.getCategories())
+                .categories(user.getCategoriesList())
                 .build();
     }
 
@@ -54,7 +54,8 @@ public class UserService {
     }
 
     public User findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("not found"));
+        return userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User with username: " + username + " not found"));
     }
 
 

@@ -1,6 +1,5 @@
 package com.lobanov.dto;
 
-import com.lobanov.models.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +13,9 @@ public class ExpenseDto {
 
     private Long categoryId;
 
-    private Date expensesDateTime;
+    private Date expenseTimeStamp;
 
-    private Long expenseValue;
+    private Double expenseValue;
 
     private String categoryName;
 }
