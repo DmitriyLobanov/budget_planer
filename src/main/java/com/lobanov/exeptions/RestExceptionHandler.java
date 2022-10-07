@@ -15,7 +15,6 @@ import static java.time.LocalDateTime.now;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
-
     @ExceptionHandler(value = UserAlreadyExistException.class)
     public ResponseEntity<Object> handleUserAlreadyExistException(UserAlreadyExistException ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -50,5 +49,16 @@ public class RestExceptionHandler {
                         .errors(Map.of("exception", ex.getClass().getName()))
                         .build()
         );
+    }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status)
+                .body(CustomResponse.builder()
+                        .timeStamp(now())
+                        .message(ex.getMessage())
+                        .errors(Map.of("exception", ex.getClass().getName()))
+                        .build()
+                );
     }
 }
