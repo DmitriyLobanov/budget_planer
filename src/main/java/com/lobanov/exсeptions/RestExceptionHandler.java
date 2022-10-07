@@ -1,14 +1,11 @@
-package com.lobanov.exeptions;
+package com.lobanov.exсeptions;
 
 import com.lobanov.dto.response.CustomResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.util.Map;
 
 import static java.time.LocalDateTime.now;

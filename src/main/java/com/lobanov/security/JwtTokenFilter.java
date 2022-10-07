@@ -1,7 +1,7 @@
 package com.lobanov.security;
 
 
-import com.lobanov.exeptions.JwtAuthenticationException;
+import com.lobanov.exсeptions.JwtAuthenticationException;
 import com.lobanov.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

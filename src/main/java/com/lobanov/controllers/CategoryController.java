@@ -3,7 +3,7 @@ package com.lobanov.controllers;
 import com.lobanov.dto.CategoryDto;
 import com.lobanov.dto.ExpenseDto;
 import com.lobanov.dto.response.UserDtoResponse;
-import com.lobanov.exeptions.CategoryNotFoundException;
+import com.lobanov.exсeptions.CategoryNotFoundException;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.service.CategoryService;
 import com.lobanov.service.UserService;

@@ -2,8 +2,8 @@ package com.lobanov.service;
 
 import com.lobanov.dto.CategoryDto;
 import com.lobanov.dto.ExpenseDto;
-import com.lobanov.exeptions.CategoryNotFoundException;
-import com.lobanov.exeptions.UserNotFoundException;
+import com.lobanov.exсeptions.CategoryNotFoundException;
+import com.lobanov.exсeptions.UserNotFoundException;
 import com.lobanov.models.Category;
 import com.lobanov.models.Expense;
 import com.lobanov.models.User;
@@ -12,9 +12,7 @@ import com.lobanov.repositories.ExpensesRepository;
 import com.lobanov.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Date;
 import java.util.List;

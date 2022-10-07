@@ -2,7 +2,7 @@ package com.lobanov.service;
 
 import com.lobanov.dto.request.UserDtoRequest;
 import com.lobanov.dto.response.UserDtoResponse;
-import com.lobanov.exeptions.UserNotFoundException;
+import com.lobanov.exсeptions.UserNotFoundException;
 import com.lobanov.models.User;
 import com.lobanov.repositories.UserRepository;
 import com.lobanov.security.jwt.JwtUser;

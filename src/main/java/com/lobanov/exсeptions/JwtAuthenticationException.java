@@ -1,10 +1,8 @@
-package com.lobanov.exeptions;
+package com.lobanov.exсeptions;
 
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
 public class JwtAuthenticationException extends RuntimeException {
