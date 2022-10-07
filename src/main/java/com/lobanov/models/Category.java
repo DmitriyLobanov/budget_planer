@@ -33,7 +33,7 @@ public class Category {
     @JsonManagedReference
     private List<Expense> expensesList;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;

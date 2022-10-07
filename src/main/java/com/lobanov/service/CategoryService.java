@@ -86,16 +86,12 @@ public class CategoryService {
         return categoryDto;
     }
 
-    public CategoryDto getCategoryById(Long id, Long userId) {
-
-        Optional<Category> optionalCategory = categoryRepository.findCategoryById(id);
+    public CategoryDto getCategoryById(Long categoryId, Long userId) {
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByIdAndUserId(categoryId, userId);
         if (optionalCategory.isEmpty()) {
-            throw new CategoryNotFoundException("Category with id: " + id  + " not found");
+            throw  new CategoryNotFoundException("Category with id " + categoryId + " not found");
         }
         Category category = optionalCategory.get();
-        if (!category.getUser().getId().equals(userId)) {
-            throw new CategoryNotFoundException("Category with id: " + id  + " not found");
-        }
         CategoryDto categoryDto = mapCategoryToDto(category);
         categoryDto.setRemainder(calculateRemainderInCategory(categoryDto));
         return categoryDto;
@@ -109,19 +105,19 @@ public class CategoryService {
     }
 
     public ExpenseDto addExpensesToCategory(Long userId, Double expenseValue, Long categoryId) {
-        Optional<Category> optionalCategory = categoryRepository.findCategoryById(categoryId);
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByIdAndUserId(categoryId, userId);
         if(optionalCategory.isEmpty()) {
             throw new CategoryNotFoundException("Category with id = " + categoryId + " not found");
         }
-        Category category = optionalCategory.get();
-        if (!category.getUser().getId().equals(userId)) {
-            throw new CategoryNotFoundException("Category doesn`t exist");
-        }
-        Expense expense = new Expense(null, new Date(), expenseValue, category);
+        Expense expense = new Expense(null, new Date(), expenseValue, optionalCategory.get());
         return mapExpenseToDto(expensesRepository.save(expense));
     }
 
-    public void deleteCategoryById(Long id) {
-        categoryRepository.deleteById(id);
+    public void deleteCategoryById(Long categoryId, Long userId) {
+        Optional<Category> optionalCategory = categoryRepository.findCategoryByIdAndUserId(categoryId, userId);
+        if(optionalCategory.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id = " + categoryId + " not found");
+        }
+        categoryRepository.deleteById(categoryId);
     }
 }
