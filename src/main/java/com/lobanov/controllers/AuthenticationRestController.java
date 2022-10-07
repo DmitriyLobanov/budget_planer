@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +32,7 @@ public class AuthenticationRestController {
         String token = authenticationRestService.createToken(request.getUsername(), request.getPassword());
         log.info("TOKEN IS {}", token);
         if (token == null) {
-            return ResponseEntity.status( HttpStatus.FORBIDDEN).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid username or password");
         }
         Map<Object, Object> response = new HashMap<>();
         response.put("username", request.getUsername());
@@ -38,15 +40,16 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        SecurityContextLogoutHandler handler = new SecurityContextLogoutHandler();
-        handler.logout(request, response, null);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+        }
     }
 
     @PostMapping("/registration")
     public ResponseEntity<UserRegistrationResponseDto> registration(@RequestBody UserRegistrationRequestDto request) {
-        authenticationRestService.createUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationRestService.mapRequestToResponse(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationRestService.createUser(request));
     }
 }

@@ -2,18 +2,15 @@ package com.lobanov.service;
 
 import com.lobanov.dto.request.UserRegistrationRequestDto;
 import com.lobanov.dto.response.UserRegistrationResponseDto;
-import com.lobanov.enums.RoleEnum;
 import com.lobanov.enums.UserStatus;
 import com.lobanov.exeptions.JwtAuthenticationException;
 import com.lobanov.exeptions.UserAlreadyExistException;
-import com.lobanov.exeptions.UserNotFoundException;
 import com.lobanov.models.User;
 import com.lobanov.repositories.RoleRepository;
 import com.lobanov.repositories.UserRepository;
 import com.lobanov.security.jwt.JwtTokenProvider;
 import com.lobanov.security.jwt.JwtUser;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,8 +21,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,17 +56,14 @@ public class AuthenticationRestService {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList()));
         } catch (AuthenticationException e) {
-            throw new JwtAuthenticationException("Invalid Username or password", HttpStatus.UNAUTHORIZED);
+            throw new JwtAuthenticationException("Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
         return token;
     }
 
-    //намутить фасад - маппер юзеров в дто и тд
     public UserRegistrationResponseDto createUser(UserRegistrationRequestDto request) {
-        // TODO ПОМЕНЯТЬ В РЕПО userRepository.isUserExistsByUsername(username)
-        Optional<User> userCheck = userRepository.findUserByUsernameAndEmail(request.getUsername(), request.getEmail());
-        if (userCheck.isPresent()) {
-           throw  new UserAlreadyExistException("User with " + request.getUsername() + " and " + request.getEmail() + " already exist" );
+        if (userRepository.existsByUsernameOrEmail(request.getUsername(), request.getEmail())) {
+            throw  new UserAlreadyExistException("User with username: " + request.getUsername() + " or email: " + request.getEmail() + " already exist" );
         }
         User user = new User();
         user.setFirstName(request.getFirstName());
@@ -81,10 +73,7 @@ public class AuthenticationRestService {
         user.setPhoneNumber(request.getPhoneNumber());
         user.setUsername(request.getUsername());
         user.setStatus(UserStatus.ACTIVE);
-        user.setRoles(List.of(roleRepository.findByRoles(RoleEnum.ROLE_USER).get()));
         userRepository.save(user);
         return mapRequestToResponse(request);
     }
-
-
 }

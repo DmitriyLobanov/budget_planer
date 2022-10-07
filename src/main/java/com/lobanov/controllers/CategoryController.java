@@ -3,6 +3,7 @@ package com.lobanov.controllers;
 import com.lobanov.dto.CategoryDto;
 import com.lobanov.dto.ExpenseDto;
 import com.lobanov.dto.response.UserDtoResponse;
+import com.lobanov.exeptions.CategoryNotFoundException;
 import com.lobanov.security.jwt.JwtUser;
 import com.lobanov.service.CategoryService;
 import com.lobanov.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -33,13 +35,14 @@ public class CategoryController {
 
     @GetMapping("/me/{id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
+        JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return ResponseEntity.ok(categoryService.getCategoryById(id, user.getId()));
     }
 
     @PostMapping("/me")
     public ResponseEntity<ExpenseDto> addExpensesToCategory(@RequestBody ExpenseDto payload) {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("USER ID = {}", user.getId());
         ExpenseDto expenseDto = categoryService.addExpensesToCategory(user.getId(), payload.getExpenseValue(), payload.getCategoryId());
         return ResponseEntity.ok(expenseDto);
     }
@@ -55,15 +58,28 @@ public class CategoryController {
     @PutMapping("/me/{id}")
     public ResponseEntity<CategoryDto> changeCategoryParameters(@RequestBody CategoryDto payload, @PathVariable Long id) {
         JwtUser user = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        CategoryDto categoryDto = categoryService.getCategoryById(id);
-        if (categoryDto == null) {
+
+        CategoryDto categoryDto;
+        try {
+            categoryDto = categoryService.getCategoryById(id, user.getId());
+        } catch (CategoryNotFoundException e) {
             UserDtoResponse userDto = userService.getUserById(user.getId());
-            categoryDto = new CategoryDto(null, null, null, payload.getLimit(), payload.getName(), userDto.getId());
+            categoryDto = new CategoryDto(null, 0D,  payload.getLimit(), payload.getName(), userDto.getId(), Collections.emptyList() );
             categoryService.addCategory(categoryDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
         }
         categoryDto.setName(payload.getName());
         categoryDto.setLimit(payload.getLimit());
+
+
+        /*if (categoryDto == null) {
+            UserDtoResponse userDto = userService.getUserById(user.getId());
+            categoryDto = new CategoryDto(null, 0D,  payload.getLimit(), payload.getName(), userDto.getId(), Collections.emptyList() );
+            categoryService.addCategory(categoryDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
+        }
+        categoryDto.setName(payload.getName());
+        categoryDto.setLimit(payload.getLimit());*/
         return ResponseEntity.ok(categoryService.updateCategory(categoryDto));
     }
 

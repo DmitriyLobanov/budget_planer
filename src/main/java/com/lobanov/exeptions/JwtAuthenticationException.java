@@ -7,7 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
-public class JwtAuthenticationException extends AuthenticationException {
+public class JwtAuthenticationException extends RuntimeException {
     private HttpStatus httpStatus;
 
     public JwtAuthenticationException(String msg, HttpStatus httpStatus) {

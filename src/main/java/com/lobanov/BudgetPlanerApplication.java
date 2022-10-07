@@ -29,7 +29,7 @@ public class BudgetPlanerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        roleRepository.saveAll(List.of(
+        /*roleRepository.saveAll(List.of(
                 new Role(null, RoleEnum.ROLE_ADMIN ),
                 new Role(null, RoleEnum.ROLE_USER )
         ));
@@ -45,6 +45,6 @@ public class BudgetPlanerApplication implements CommandLineRunner {
                 .roles(roleRepository.findAll())
                 .status(UserStatus.ACTIVE)
                 .build()
-        );
+        );*/
     }
 }

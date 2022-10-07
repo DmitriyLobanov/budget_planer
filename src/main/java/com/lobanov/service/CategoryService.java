@@ -12,7 +12,9 @@ import com.lobanov.repositories.ExpensesRepository;
 import com.lobanov.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Date;
 import java.util.List;
@@ -84,12 +86,17 @@ public class CategoryService {
         return categoryDto;
     }
 
-    public CategoryDto getCategoryById(Long id) {
-        Optional<Category> category = categoryRepository.findCategoryById(id);
-        if (category.isEmpty()) {
-            return null;
+    public CategoryDto getCategoryById(Long id, Long userId) {
+
+        Optional<Category> optionalCategory = categoryRepository.findCategoryById(id);
+        if (optionalCategory.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id: " + id  + " not found");
         }
-        CategoryDto categoryDto = mapCategoryToDto(category.orElseThrow(() -> new CategoryNotFoundException("Category not found")));
+        Category category = optionalCategory.get();
+        if (!category.getUser().getId().equals(userId)) {
+            throw new CategoryNotFoundException("Category with id: " + id  + " not found");
+        }
+        CategoryDto categoryDto = mapCategoryToDto(category);
         categoryDto.setRemainder(calculateRemainderInCategory(categoryDto));
         return categoryDto;
     }
@@ -101,8 +108,15 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public ExpenseDto addExpensesToCategory(Long userId, Double expenseValue, Long id) {
-        Category category = categoryRepository.findById(id).orElse(null);
+    public ExpenseDto addExpensesToCategory(Long userId, Double expenseValue, Long categoryId) {
+        Optional<Category> optionalCategory = categoryRepository.findCategoryById(categoryId);
+        if(optionalCategory.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id = " + categoryId + " not found");
+        }
+        Category category = optionalCategory.get();
+        if (!category.getUser().getId().equals(userId)) {
+            throw new CategoryNotFoundException("Category doesn`t exist");
+        }
         Expense expense = new Expense(null, new Date(), expenseValue, category);
         return mapExpenseToDto(expensesRepository.save(expense));
     }

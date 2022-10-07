@@ -18,6 +18,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long > {
     List<Category> findAllByUserId(Long id);
 
    // @EntityGraph(attributePaths = {"expensesList", "user"})
+    Optional<Category> findCategoryByUserId(Long id);
     Optional<Category> findCategoryById(Long id);
 
     Optional<Category> findCategoryByNameAndUser(String name, User user);

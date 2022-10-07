@@ -17,11 +17,11 @@ public class CategoryDto {
 
     private Double remainder;
 
-    private List<Expense> expensesList;
-
     private Double limit;
 
     private String name;
 
     private Long userId;
+
+    private List<Expense> expensesList;
 }
