@@ -17,4 +17,4 @@ services:
     environment:
       ACTIVE_PROFILE: "docker"
     ports:
-      - "8080:8080"Ф
+      - "8080:8080"
