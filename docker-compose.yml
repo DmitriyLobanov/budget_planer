@@ -10,3 +10,11 @@ services:
     ports:
       - "5432:5432"
     image: postgres:14.5-alpine
+
+  budget_planer:
+    container_name: 'budget_planer_app'
+    build: ./
+    environment:
+      ACTIVE_PROFILE: "docker"
+    ports:
+      - "8080:8080"Ф
